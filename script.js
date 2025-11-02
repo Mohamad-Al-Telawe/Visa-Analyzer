@@ -192,9 +192,9 @@ function renderTotalsTable(data) {
           <td>52121 - مصاريف عمولة فيزا كارد (عمان)</td>
         </tr>
         <tr>
+        <td>0</td>
           <td>${gross}</td>
           <td>${branch["account id"]}</td>
-          <td>${branch.name}</td>
         </tr>
       </table>
     `;
