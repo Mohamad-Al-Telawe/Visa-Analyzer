@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>تقارير نقاط البيع</title>
+      <link rel="stylesheet" href="style.css" />
+   </head>
+   <body>
+      <header>
+         <h1>📊 تقارير وإجماليات نقاط البيع</h1>
+      </header>
+
+      <main>
+         <section class="analyze-section card">
+            <h3>أدخل محتوى تقرير الفيزا:</h3>
+            <textarea
+               id="visa-text"
+               rows="10"
+               placeholder="انسخ هنا محتوى التقرير..."
+            ></textarea>
+            <button id="analyze-btn">تحليل التقرير</button>
+         </section>
+
+         <section class="card">
+            <h2>🏦 إجماليات الفروع</h2>
+            <table id="summary-table">
+               <thead>
+                  <tr>
+                     <th>اسم الفرع</th>
+                     <th>Terminal ID</th>
+                     <th>Account ID</th>
+                     <th>تفاصيل</th>
+                  </tr>
+               </thead>
+               <tbody id="totals-body"></tbody>
+            </table>
+         </section>
+
+         <section class="card">
+            <h2>🔍 مقارنة الفواتير</h2>
+            <div class="compare-controls">
+               <label>اختر Terminal:</label>
+               <select id="terminal-select"></select>
+            </div>
+
+            <textarea
+               id="invoice-input"
+               placeholder="ألصق هنا نص الفواتير. الصيغة المطلوبة لكل فاتورة: `202511185 9 رقم البطاقة : 8081`"
+               rows="10"
+            ></textarea>
+
+            <div class="options">
+               <label
+                  ><input type="checkbox" id="showExact" checked /> المطابقات
+                  التامة</label
+               >
+               <label
+                  ><input type="checkbox" id="showCardOnly" checked /> اختلاف في
+                  القيمة (نفس البطاقة)</label
+               >
+               <label
+                  ><input type="checkbox" id="showAmountOnly" checked /> اختلاف
+                  في رقم البطاقة (نفس القيمة)</label
+               >
+               <label
+                  ><input type="checkbox" id="showInvoiceOnly" checked /> فواتير
+                  غير مطابقة</label
+               >
+               <label
+                  ><input type="checkbox" id="showRecordOnly" checked /> سجلات
+                  غير مطابقة</label
+               >
+            </div>
+
+            <button id="compare-btn" class="compare-btn">قارن الآن</button>
+
+            <div id="compare-results" class="results">
+               <!-- جدول النتائج يُبنى ديناميكياً -->
+            </div>
+         </section>
+      </main>
+
+      <footer>
+         <p>✨ تصميم وتحليل بواسطة محمد | مهندس معلوماتية</p>
+      </footer>
+
+      <script src="script.js"></script>
+   </body>
+</html>

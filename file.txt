@@ -1,0 +1,562 @@
+index.html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>تقارير نقاط البيع</title>
+      <link rel="stylesheet" href="style.css" />
+   </head>
+   <body>
+      <h1>📊 إجماليات نقاط البيع</h1>
+
+      <h3>أدخل محتوى ملف الفيزا:</h3>
+<textarea id="visa-text" rows="10" cols="80" placeholder="انسخ هنا محتوى التقرير"></textarea>
+<br>
+<button id="analyze-btn">تحليل التقرير</button>
+
+<h3>إجماليات المحطات:</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Terminal ID</th>
+            <th>Gross Total</th>
+            <th>Net Total</th>
+            <th>عدد المعاملات</th>
+        </tr>
+    </thead>
+    <tbody id="totals-body"></tbody>
+</table>
+
+      <hr style="margin: 40px 0" />
+
+      <h2>🔍 مقارنة الفواتير</h2>
+
+      <section id="compare-section">
+         <div class="compare-controls">
+            <label>اختر Terminal ID:</label>
+            <select id="terminal-select"></select>
+         </div>
+
+         <textarea
+            id="invoice-input"
+            placeholder="ألصق هنا نص الفواتير..."
+            rows="10"></textarea>
+
+         <div class="options">
+            <label
+               ><input type="checkbox" id="showExact" checked /> عرض المطابقات
+               التامة (رقم البطاقة + القيمة)</label
+            ><br />
+            <label
+               ><input type="checkbox" id="showCardOnly" checked /> عرض اختلاف
+               القيمة فقط مع نفس رقم البطاقة</label
+            ><br />
+            <label
+               ><input type="checkbox" id="showAmountOnly" checked /> عرض اختلاف
+               رقم البطاقة بنفس القيمة</label
+            ><br />
+            <label
+               ><input type="checkbox" id="showInvoiceOnly" checked /> عرض
+               فواتير لا تطابق أي سجل</label
+            ><br />
+            <label
+               ><input type="checkbox" id="showRecordOnly" checked /> عرض سجلات
+               لا تطابق أي فاتورة</label
+            >
+         </div>
+
+         <button id="compare-btn">قارن الآن</button>
+
+         <div id="compare-results"></div>
+      </section>
+
+      <script src="script.js"></script>
+   </body>
+</html>
+
+
+
+
+script.js
+
+let merged = []; // إعلان متغير عام
+let text = ``;
+document.getElementById("analyze-btn").addEventListener("click", () => {
+     text = document.getElementById("visa-text").value;
+
+    if (!text.trim()) {
+        alert("الرجاء إدخال محتوى التقرير");
+        return;
+    }
+
+    const raw = parseMerchantReport(text);
+    merged = mergeTerminals(raw); // <-- تحديث المتغير العام
+    renderTotalsTable(merged);
+
+    // تنظيف القائمة القديمة وإعادة تعبئتها
+    const select = document.getElementById("terminal-select");
+    select.innerHTML = "";
+    populateTerminalSelect(merged);
+});
+
+
+
+// الدالتان من قبل 👇
+function parseMerchantReport(text) {
+   const terminals = [];
+   const terminalBlocks = text.split(/Terminal ID:/).slice(1);
+
+   terminalBlocks.forEach((block) => {
+      const lines = block
+         .trim()
+         .split("\n")
+         .map((l) => l.trim())
+         .filter(Boolean);
+
+      const terminalId = lines[0].trim();
+      const transactions = [];
+      let totalGross = null,
+         totalNet = null;
+
+      for (let i = 0; i < lines.length; i++) {
+         const line = lines[i];
+
+         // 🔹 استخراج رقم البطاقة والمبلغ الصافي (Net)
+         const cardMatch = line.match(/\*{6}(\d{4})/);
+         const netMatch = line.match(/\s\d+\.\d+-\d+\.\d+\s+(\d+\.\d+)/);
+
+         if (cardMatch && netMatch) {
+            transactions.push({
+               cardNumber: cardMatch[1],
+               amount: parseFloat(netMatch[1]),
+            });
+         }
+
+         // 🔹 البحث عن سطر Total
+         if (/^Total/i.test(line)) {
+            let gross = null;
+            let net = null;
+            let collectedNumbers = [];
+
+            // اجمع الأسطر التالية (حتى 5 أسطر بعد Total)
+            for (let k = i; k < i + 6 && k < lines.length; k++) {
+               const nums = lines[k].match(/[\d]+\.\d+/g);
+               if (nums) collectedNumbers.push(...nums);
+
+               // إذا ظهرت كلمة Net نحاول التقاط الرقم بعدها مباشرة
+               const netLine = lines[k].match(/Net\s*([\d.]+)/i);
+               if (netLine) {
+                  net = parseFloat(netLine[1]);
+               }
+            }
+
+            // ⚙️ تحديد Gross وNet من الأرقام المجمعة
+            if (collectedNumbers.length >= 2) {
+               // Gross هو أول رقم بعد كلمة Total
+               gross = parseFloat(collectedNumbers[0]);
+
+               // Net عادة آخر رقم في الكتلة
+               net = net ?? parseFloat(collectedNumbers[collectedNumbers.length - 1]);
+            }
+
+            // ✅ تحديث الإجماليات إن كانت معقولة
+            if (gross && net && net <= gross * 1.1 && net >= gross * 0.5) {
+               totalGross = gross;
+               totalNet = net;
+            }
+         }
+      }
+
+      terminals.push({
+         terminalId,
+         total: { gross: totalGross, net: totalNet },
+         transactions,
+      });
+   });
+
+   return terminals;
+}
+
+
+
+// function mergeTerminals(terminals) {
+//    const merged = {};
+
+//    terminals.forEach((item) => {
+//       const id = item.terminalId;
+//       if (!merged[id]) {
+//          merged[id] = {
+//             terminalId: id,
+//             transactions: [],
+//             total: { gross: 0, net: 0 },
+//          };
+//       }
+//       merged[id].transactions.push(...item.transactions);
+//       if (item.total?.gross) merged[id].total.gross = item.total.gross;
+//       if (item.total?.net) merged[id].total.net = item.total.net;
+//    });
+
+//    return Object.values(merged);
+// }
+
+function mergeTerminals(terminals) {
+   const merged = {};
+
+   terminals.forEach((item) => {
+      const id = item.terminalId;
+      if (!merged[id]) {
+         merged[id] = {
+            terminalId: id,
+            transactions: [],
+            total: { gross: 0, net: 0 },
+         };
+      }
+
+      merged[id].transactions.push(...item.transactions);
+
+      // إذا وجدنا إجمالي رسمي من التقرير نستخدمه
+      if (item.total?.gross) merged[id].total.gross = item.total.gross;
+      if (item.total?.net) merged[id].total.net = item.total.net;
+   });
+
+   // بعد الدمج: إذا بقي الإجمالي صفر، نحسبه من المعاملات
+   Object.values(merged).forEach((item) => {
+      if (!item.total.gross && item.transactions.length) {
+         item.total.gross = item.transactions.reduce(
+            (sum, t) => sum + t.amount,
+            0
+         );
+         item.total.net = item.total.gross; // إذا لم يكن هناك فرق بين gross وnet في المعاملات
+      }
+   });
+
+   return Object.values(merged);
+}
+
+// ⚙️ تشغيل التحليل والعرض
+const raw = parseMerchantReport(text);
+ merged = mergeTerminals(raw);
+renderTotalsTable(merged);
+
+function renderTotalsTable(data) {
+   const tbody = document.getElementById("totals-body");
+   tbody.innerHTML = "";
+
+   data.forEach((item) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+      <td>${item.terminalId}</td>
+      <td>${item.total.gross?.toFixed(3) || "-"}</td>
+      <td>${item.total.net?.toFixed(3) || "-"}</td>
+      <td>${item.transactions.length}</td>
+   `;
+      tbody.appendChild(tr);
+   });
+}
+
+// ------------------ تحميل القائمة المنسدلة ------------------
+function populateTerminalSelect(data) {
+   const select = document.getElementById("terminal-select");
+   data.forEach((item) => {
+      const opt = document.createElement("option");
+      opt.value = item.terminalId;
+      opt.textContent = item.terminalId;
+      select.appendChild(opt);
+   });
+}
+
+// بعد تحميل الصفحة
+populateTerminalSelect(merged);
+
+// ------------------ دالة استخراج الفواتير ------------------
+function parseInvoices(text) {
+   const lines = text
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+   const invoices = [];
+
+   lines.forEach((line) => {
+      // النمطين الممكنين
+      let match = line.match(
+         /^([\d.]+)\s*(?:Card Number|رقم البطاقة)\s*[:：]?\s*(\d{4})/
+      );
+      if (match) {
+         invoices.push({
+            amount: parseFloat(match[1]),
+            cardNumber: match[2],
+         });
+      }
+   });
+
+   return invoices;
+}
+
+// ------------------ دالة المقارنة ------------------
+function compareInvoicesToRecords(invoices, records, options) {
+   const results = [];
+   const usedInvoices = new Set();
+   const usedRecords = new Set();
+
+   // 1️⃣ المطابقات التامة
+   if (options.showExact) {
+      invoices.forEach((inv, i) => {
+         const matchIdx = records.findIndex(
+            (r, j) =>
+               !usedRecords.has(j) &&
+               r.cardNumber === inv.cardNumber &&
+               Math.abs(r.amount - inv.amount) < 0.001
+         );
+         if (matchIdx !== -1) {
+            results.push({
+               type: "مطابقة تامة ✅",
+               card: inv.cardNumber,
+               amount: inv.amount,
+            });
+            usedInvoices.add(i);
+            usedRecords.add(matchIdx);
+         }
+      });
+   }
+
+   // 2️⃣ نفس رقم البطاقة لكن قيم مختلفة
+   if (options.showCardOnly) {
+      invoices.forEach((inv, i) => {
+         if (usedInvoices.has(i)) return;
+         const matchIdx = records.findIndex(
+            (r, j) => !usedRecords.has(j) && r.cardNumber === inv.cardNumber
+         );
+         if (matchIdx !== -1) {
+            results.push({
+               type: "اختلاف في القيمة ⚠️",
+               card: inv.cardNumber,
+               invoiceAmount: inv.amount,
+               recordAmount: records[matchIdx].amount,
+            });
+            usedInvoices.add(i);
+            usedRecords.add(matchIdx);
+         }
+      });
+   }
+
+   // 3️⃣ نفس القيمة لكن رقم البطاقة مختلف
+   if (options.showAmountOnly) {
+      invoices.forEach((inv, i) => {
+         if (usedInvoices.has(i)) return;
+         const matchIdx = records.findIndex(
+            (r, j) =>
+               !usedRecords.has(j) && Math.abs(r.amount - inv.amount) < 0.001
+         );
+         if (matchIdx !== -1) {
+            results.push({
+               type: "اختلاف في رقم البطاقة ⚠️",
+               amount: inv.amount,
+               invoiceCard: inv.cardNumber,
+               recordCard: records[matchIdx].cardNumber,
+            });
+            usedInvoices.add(i);
+            usedRecords.add(matchIdx);
+         }
+      });
+   }
+
+   // 4️⃣ فاتورة بدون أي تطابق
+   if (options.showInvoiceOnly) {
+      invoices.forEach((inv, i) => {
+         if (usedInvoices.has(i)) return;
+         results.push({
+            type: "فاتورة غير موجودة ❌",
+            card: inv.cardNumber,
+            amount: inv.amount,
+         });
+      });
+   }
+
+   // 5️⃣ سجل بدون أي فاتورة
+   if (options.showRecordOnly) {
+      records.forEach((r, j) => {
+         if (usedRecords.has(j)) return;
+         results.push({
+            type: "سجل غير مطابق ⚠️",
+            card: r.cardNumber,
+            amount: r.amount,
+         });
+      });
+   }
+
+   return results;
+}
+
+// ------------------ عند الضغط على زر المقارنة ------------------
+document.getElementById("compare-btn").addEventListener("click", () => {
+   const selectedId = document.getElementById("terminal-select").value;
+   const invoiceText = document.getElementById("invoice-input").value;
+   const invoices = parseInvoices(invoiceText);
+
+   const terminal = merged.find((t) => t.terminalId === selectedId);
+   if (!terminal) {
+      alert("الرجاء اختيار Terminal ID صحيح");
+      return;
+   }
+
+   const options = {
+      showExact: document.getElementById("showExact").checked,
+      showCardOnly: document.getElementById("showCardOnly").checked,
+      showAmountOnly: document.getElementById("showAmountOnly").checked,
+      showInvoiceOnly: document.getElementById("showInvoiceOnly").checked,
+      showRecordOnly: document.getElementById("showRecordOnly").checked,
+   };
+
+   const result = compareInvoicesToRecords(
+      invoices,
+      terminal.transactions,
+      options
+   );
+
+   const container = document.getElementById("compare-results");
+   container.innerHTML =
+      "<h3>نتائج المقارنة:</h3>" +
+      result.map((r) => JSON.stringify(r)).join("<br>");
+});
+
+
+
+information.json
+{
+  "ورقة1": [
+    {
+      "Terminal ID": "20035149",
+      "name": "سيتي سنتر القرم",
+      "account id": 133223,
+      "bank account": "بنك الأهلي / مجموعة الايوبي"
+    },
+    {
+      "Terminal ID": "01340256",
+      "name": "نزوى",
+      "account id": 133212,
+      "bank account": "بنك الأهلي / مجموعة الايوبي"
+    },
+    {
+      "Terminal ID": "01340264",
+      "name": "التنين 2",
+      "account id": 133202,
+      "bank account": "بنك الأهلي / مجموعة الايوبي"
+    },
+    {
+      "Terminal ID": "01340272",
+      "name": "السعادة",
+      "account id": 133211,
+      "bank account": "بنك الأهلي / مجموعة الايوبي"
+    },
+    {
+      "Terminal ID": "01340280",
+      "name": "السيب 2",
+      "account id": 133204,
+      "bank account": "بنك الأهلي / مجموعة الايوبي"
+    },
+    {
+      "Terminal ID": "01340298",
+      "name": "صحار 2",
+      "account id": 133206,
+      "bank account": "بنك الأهلي / مجموعة الايوبي"
+    },
+    {
+      "Terminal ID": "01399377",
+      "name": "الخوض",
+      "account id": 133213,
+      "bank account": "بنك الأهلي / مجموعة الايوبي"
+    },
+    {
+      "Terminal ID": "01450618",
+      "name": "الحيل 2",
+      "account id": 133215,
+      "bank account": "بنك الأهلي / مجموعة الايوبي"
+    },
+    {
+      "Terminal ID": "20045522",
+      "name": "افينو مول",
+      "account id": 133218,
+      "bank account": "بنك الأهلي / همسات العالمية للاستثمار"
+    },
+    {
+      "Terminal ID": "20082624",
+      "name": "سيتي سنتر صحار",
+      "account id": 133221,
+      "bank account": "بنك الأهلي / همسات العالمية للاستثمار"
+    },
+    {
+      "Terminal ID": "20082632",
+      "name": "عمان مول",
+      "account id": 133222,
+      "bank account": "بنك الأهلي / همسات العالمية للاستثمار"
+    },
+    {
+      "Terminal ID": "01336858",
+      "name": "الحيل 1",
+      "account id": 133207,
+      "bank account": "بنك الأهلي / همسات العالمية للاستثمار"
+    },
+    {
+      "Terminal ID": "01336866",
+      "name": "صحار 1",
+      "account id": 133205,
+      "bank account": "بنك الأهلي / همسات العالمية للاستثمار"
+    },
+    {
+      "Terminal ID": "01336874",
+      "name": "التنين 1",
+      "account id": 133201,
+      "bank account": "بنك الأهلي / همسات العالمية للاستثمار"
+    },
+    {
+      "Terminal ID": "01336882",
+      "name": "شارع السلام",
+      "account id": 133210,
+      "bank account": "بنك الأهلي / همسات العالمية للاستثمار"
+    },
+    {
+      "Terminal ID": "20336890",
+      "name": "مويلح",
+      "account id": 133224,
+      "bank account": "بنك الأهلي / همسات العالمية للاستثمار"
+    },
+    {
+      "Terminal ID": "01663954",
+      "name": "مسقط مول",
+      "account id": 133216,
+      "bank account": "بنك الأهلي / همسات العالمية للاستثمار"
+    },
+    {
+      "Terminal ID": "20080727",
+      "name": "السيب3",
+      "account id": 133217,
+      "bank account": "بنك الأهلي / الفن الشامي"
+    },
+    {
+      "Terminal ID": "20080735",
+      "name": "العامرات",
+      "account id": 133219,
+      "bank account": "بنك الأهلي / الفن الشامي"
+    },
+    {
+      "Terminal ID": "20080743",
+      "name": "التنين 3",
+      "account id": 133220,
+      "bank account": "بنك الأهلي / الفن الشامي"
+    },
+    {
+      "Terminal ID": "20080750",
+      "name": "صور",
+      "account id": 133209,
+      "bank account": "بنك الأهلي / الفن الشامي"
+    }
+  ]
+}
+
+
+13216-بنك الاهلي /همسات العالمية للاستثمار
+13217-بنك الاهلي /مجموعة الايوبي
+13219-بنك الأهلي / الفن الشامي
+
+52121-مصاريف عمولة فيزا كارد (عمان)
