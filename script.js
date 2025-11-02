@@ -189,7 +189,7 @@ function renderTotalsTable(data) {
         <tr>
           <td>${diff}</td>
           <td>0</td>
-          <td>52121 - مصاريف عمولة فيزا كارد (عمان)</td>
+          <td>52121</td>
         </tr>
         <tr>
         <td>0</td>
@@ -522,7 +522,7 @@ function renderCompareResults(results, records, invoices, branchAccountId) {
       <tr>
         <td>0</td>
         <td>${diff != null ? diff : "-"}</td>
-        <td>زيادة مبيعات عمان</td>
+        <td>415</td>
         <td>زيادة سحب بالفيزا بالكشف رقم البطاقة ${
            cardNum || "-"
         } رقم الفاتورة ${invId || "-"}</td>
