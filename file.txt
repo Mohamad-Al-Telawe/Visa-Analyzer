@@ -1,9 +1,13 @@
+index.html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
    <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>تقارير نقاط البيع</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=El+Messiri:wght@400..700&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="style.css" />
    </head>
    <body>
@@ -82,161 +86,23 @@
       </main>
 
       <footer>
-         <p>✨ تصميم وتحليل بواسطة محمد | مهندس معلوماتية</p>
+         <p>✨ تصميم وتحليل بواسطة محمد التلاوي - مهندس معلوماتية - ✨</p>
       </footer>
 
+      <script src="errors_feature_code.js"></script>
       <script src="script.js"></script>
    </body>
 </html>
 
 
+============================================================
 
-
-
-
-======================================================================================================
-information.json
-{
-  "ورقة1": [
-    {
-      "Terminal ID": "20035149",
-      "name": "City Centre Qurum",
-      "account id": 133223,
-      "bank account": "13217"
-    },
-    {
-      "Terminal ID": "01340256",
-      "name": "Nazwa",
-      "account id": 133212,
-      "bank account": "13217"
-    },
-    {
-      "Terminal ID": "01340264",
-      "name": "Golden Dragon Mall (Br2)",
-      "account id": 133202,
-      "bank account": "13217"
-    },
-    {
-      "Terminal ID": "01340272",
-      "name": "Al saada BR",
-      "account id": 133211,
-      "bank account": "13217"
-    },
-    {
-      "Terminal ID": "01340280",
-      "name": "AL SEEB (Br2)",
-      "account id": 133204,
-      "bank account": "13217"
-    },
-    {
-      "Terminal ID": "01340298",
-      "name": "Souhar (Br2)",
-      "account id": 133206,
-      "bank account": "13217"
-    },
-    {
-      "Terminal ID": "01399377",
-      "name": "Alkhawd",
-      "account id": 133213,
-      "bank account": "13217"
-    },
-    {
-      "Terminal ID": "01450618",
-      "name": "Elheil (Br2)",
-      "account id": 133215,
-      "bank account": "13217"
-    },
-    {
-      "Terminal ID": "20045522",
-      "name": "Avenues Mall",
-      "account id": 133218,
-      "bank account": "13216"
-    },
-    {
-      "Terminal ID": "20082624",
-      "name": "City Centre Suhar",
-      "account id": 133221,
-      "bank account": "13216"
-    },
-    {
-      "Terminal ID": "20082632",
-      "name": "Mall of oman",
-      "account id": 133222,
-      "bank account": "13216"
-    },
-    {
-      "Terminal ID": "01336858",
-      "name": "Elheil (Br1)",
-      "account id": 133207,
-      "bank account": "13216"
-    },
-    {
-      "Terminal ID": "01336866",
-      "name": "Souhar (Br1)",
-      "account id": 133205,
-      "bank account": "13216"
-    },
-    {
-      "Terminal ID": "01336874",
-      "name": "Golden Dragon Mall (Br1)",
-      "account id": 133201,
-      "bank account": "13216"
-    },
-    {
-      "Terminal ID": "01336882",
-      "name": "Alsalm St BR",
-      "account id": 133210,
-      "bank account": "13216"
-    },
-    {
-      "Terminal ID": "20017988",
-      "name": "City Center Al Mawaleh",
-      "account id": 133224,
-      "bank account": "13217"
-    },
-    {
-      "Terminal ID": "01663954",
-      "name": "Muscat Mall",
-      "account id": 133216,
-      "bank account": "13216"
-    },
-    {
-      "Terminal ID": "20080727",
-      "name": "Al SEEB (Br3)",
-      "account id": 133217,
-      "bank account": "13219"
-    },
-    {
-      "Terminal ID": "20080735",
-      "name": "Al amerat",
-      "account id": 133219,
-      "bank account": "13219"
-    },
-    {
-      "Terminal ID": "20080743",
-      "name": "Golden Dragon Mall (Br3)",
-      "account id": 133220,
-      "bank account": "13219"
-    },
-    {
-      "Terminal ID": "20080750",
-      "name": "Sur (Br1)",
-      "account id": 133209,
-      "bank account": "13219"
-    }
-  ]
-}
-
-
-
-=================================================
 script.js
+/* script.js — النسخة النهائية والمكتملة */
 
-/* script.js - النسخة المحدثة */
 let merged = [];
 let branchInfo = [];
 
-// تحميل معلومات الفروع من JSON
 fetch("information.json")
    .then((r) => r.json())
    .then((data) => {
@@ -246,7 +112,6 @@ fetch("information.json")
 
 document.getElementById("analyze-btn").addEventListener("click", () => {
    const text = document.getElementById("visa-text").value;
-
    if (!text.trim()) {
       alert("الرجاء إدخال محتوى التقرير");
       return;
@@ -262,7 +127,7 @@ document.getElementById("analyze-btn").addEventListener("click", () => {
 });
 
 /* ======================
-   دالة تحليل التقرير (محسّنة — تتعامل مع Total في سطور متفرقة)
+   تحليل تقرير البنك (كما كان)
    ====================== */
 function parseMerchantReport(text) {
    const terminals = [];
@@ -283,9 +148,7 @@ function parseMerchantReport(text) {
       for (let i = 0; i < lines.length; i++) {
          const line = lines[i];
 
-         // استخراج بطاقة وآخر أربع أرقام
          const cardMatch = line.match(/\*{6}(\d{4})/);
-         // استخراج القيمة net من صف العمليات (pattern like "5.554-0.068 5.625")
          const netMatch = line.match(/\b\d+\.\d+-\d+\.\d+\s+(\d+\.\d+)\b/);
 
          if (cardMatch && netMatch) {
@@ -295,12 +158,10 @@ function parseMerchantReport(text) {
             });
          }
 
-         // البحث الذكي عن كتلة Total (تتعامل مع أسطر بعد Total)
          if (/^Total\b/i.test(line) || /^Total\s*/i.test(line)) {
             let collectedNumbers = [];
             let foundNetExplicit = null;
 
-            // نجمع حتى 6 أسطر بعد كلمة Total (مرنة)
             for (let k = i; k < i + 7 && k < lines.length; k++) {
                const nums = lines[k].match(/(\d+\.\d+)/g);
                if (nums) collectedNumbers.push(...nums);
@@ -311,19 +172,14 @@ function parseMerchantReport(text) {
 
             if (collectedNumbers.length >= 2) {
                const gross = parseFloat(collectedNumbers[0]);
-               // محاولات متعددة لاستخراج net:
                let net =
                   foundNetExplicit ??
                   parseFloat(collectedNumbers[collectedNumbers.length - 1]);
-
-               // تجنّب حالات التقاط أرقام صغيرة جداً (مثلاً 3.390 كقيمة مُنتقلة)
-               // نضمن أن net ليست عدداً صغيراً جداً مقارنةً بـ gross
                if (gross && net && net <= gross * 1.2 && net >= gross * 0.2) {
                   totalGross = gross;
                   totalNet = net;
                }
             } else if (collectedNumbers.length === 1 && foundNetExplicit) {
-               // حالة نادرة: gross في رقم واحد في مكان آخر، net مكتوب صراحة
                totalNet = foundNetExplicit;
             }
          }
@@ -340,7 +196,7 @@ function parseMerchantReport(text) {
 }
 
 /* ======================
-   دمج المحطات (لا نغيّر منطق الحساب السابق)
+   دمج الترمينالات
    ====================== */
 function mergeTerminals(terminals) {
    const merged = {};
@@ -361,23 +217,11 @@ function mergeTerminals(terminals) {
       if (item.total?.net) merged[id].total.net = item.total.net;
    });
 
-   // إذا أردت حساب يدوي كاحتياط: لا نضعه تلقائياً (حتى لا يعطل وجود إجماليات رسمية)
-   // لكن إن لم توجد إجماليات في التقرير يمكنك تفعيل السطرين التاليين يدوياً:
-   /*
-  Object.values(merged).forEach((item) => {
-    if ((!item.total.gross || !item.total.net) && item.transactions.length) {
-      const sum = item.transactions.reduce((s, t) => s + t.amount, 0);
-      item.total.gross = item.total.gross || parseFloat(sum.toFixed(3));
-      item.total.net = item.total.net || parseFloat(sum.toFixed(3));
-    }
-  });
-  */
-
    return Object.values(merged);
 }
 
 /* ======================
-   عرض النتائج (جدول الفروع) + تفاصيل منسدلة
+   عرض جدول الإجماليات
    ====================== */
 function renderTotalsTable(data) {
    const tbody = document.getElementById("totals-body");
@@ -406,8 +250,7 @@ function renderTotalsTable(data) {
       <td>${branch.name}</td>
       <td>${id}</td>
       <td>${branch["account id"]}</td>
-      <td><button class="toggle-btn">⬇️</button></td>
-    `;
+      <td><button class="toggle-btn">⬇️</button></td>`;
 
       const trDetails = document.createElement("tr");
       trDetails.classList.add("details-row");
@@ -423,15 +266,15 @@ function renderTotalsTable(data) {
         <tr>
           <td>${diff}</td>
           <td>0</td>
-          <td>52121 - مصاريف عمولة فيزا كارد (عمان)</td>
+          <td>52121</td>
         </tr>
         <tr>
-        <td>0</td>
+          <td>0</td>
           <td>${gross}</td>
           <td>${branch["account id"]}</td>
         </tr>
-      </table>
-    `;
+      </table>`;
+
       const tdDetails = document.createElement("td");
       tdDetails.colSpan = 4;
       tdDetails.innerHTML = detailsTable;
@@ -450,11 +293,17 @@ function renderTotalsTable(data) {
 }
 
 /* ======================
-   تعبئة قائمة Terminal select - نعرض اسم الفرع بدل الرقم
+   ملء قائمة الاختيار (يضاف خيار ALL)
    ====================== */
 function populateTerminalSelect(data) {
    const select = document.getElementById("terminal-select");
    select.innerHTML = "";
+
+   const allOpt = document.createElement("option");
+   allOpt.value = "ALL";
+   allOpt.textContent = "الكل — (جميع الفروع)";
+   select.appendChild(allOpt);
+
    data.forEach((item) => {
       const id = item.terminalId;
       const branch =
@@ -470,9 +319,11 @@ function populateTerminalSelect(data) {
 }
 
 /* ======================
-   قراءة الفواتير (robust) - تتعرف على رقم الفاتورة، القيمة، ورقم البطاقة
-   الصيغة المقبولة: `202511185 9 رقم البطاقة : 8081`
-   أو تفصيلًا: id وamount على سطر، و"رقم البطاقة" في نفس السطر أو بالأسطر التالية
+   قراءة الفواتير (مُحسّنة) — يدعم branchName و Card Number (عربي/إنجليزي)
+   الصيغ المقبولة في سطر واحد:
+   1) 202518926  Al amerat  1.75  Card Number : 3617
+   2) 202524073  22.225  رقم البطاقة : 2139    (بدون اسم فرع)
+   أو نماذج مفككة (id amount في سطر واحد)
    ====================== */
 function parseInvoices(text) {
    const lines = text
@@ -481,23 +332,28 @@ function parseInvoices(text) {
       .map((l) => l.trim());
    const invoices = [];
 
-   // 1) نمط كامل في سطر واحد:
    const singleLineRegex =
-      /^(\d{6,})\s+([\d.]+)\s*(?:[^\d\n]*?رقم البطاقة\s*[:：]?\s*(\d{3,4}))?/i;
+      /^(\d{6,})\s+(.+?)\s+([\d.]+)\s*(?:[^\d\n]*?(?:رقم البطاقة|Card Number)\s*[:：]?\s*(\d{3,4}))?/i;
 
    for (let i = 0; i < lines.length; i++) {
-      const L = lines[i];
+      let L = lines[i];
+
+      // إزالة المحارف الخفية (RTL/LTR Marks)
+      L = L.replace(/[\u200F\u200E\u202A\u202B\u202C\u202D\u202E]/g, "");
+
       let m = L.match(singleLineRegex);
       if (m) {
          const invId = m[1];
-         const amount = parseFloat(m[2]);
-         const card = m[3] ? m[3] : null;
+         const branchName = m[2] ? m[2].trim() : null;
+         const amount = parseFloat(m[3]);
+         const card = m[4] ? m[4] : null;
 
-         // إذا لم يوجد رقم البطاقة، نبحث في الأسطر التالية القليلة عن "رقم البطاقة"
          let cardSearching = card;
          if (!cardSearching) {
             for (let k = i + 1; k <= i + 3 && k < lines.length; k++) {
-               const m2 = lines[k].match(/رقم البطاقة\s*[:：]?\s*(\d{3,4})/i);
+               const m2 = lines[k].match(
+                  /(?:رقم البطاقة|Card Number)\s*[:：]?\s*(\d{3,4})/i
+               );
                if (m2) {
                   cardSearching = m2[1];
                   break;
@@ -507,35 +363,40 @@ function parseInvoices(text) {
 
          invoices.push({
             invoiceId: invId,
+            branchName,
             amount,
             cardNumber: cardSearching,
          });
          continue;
       }
 
-      // 2) نمط مفكك: سطر يحتمل أن يكون "id amount" ولكن بدون "رقم البطاقة" في نفس السطر
+      // نمط مفكك: id + amount فقط (بدون اسم الفرع)
       const alt = L.match(/^(\d{6,})\s+([\d.]+)\s*$/);
       if (alt) {
          const invId = alt[1];
          const amount = parseFloat(alt[2]);
-         // جرب العثور على رقم البطاقة في الأسطر التالية
          let cardFound = null;
+
          for (let k = i + 1; k <= i + 4 && k < lines.length; k++) {
-            const m2 = lines[k].match(/رقم البطاقة\s*[:：]?\s*(\d{3,4})/i);
+            const m2 = lines[k].match(
+               /(?:رقم البطاقة|Card Number)\s*[:：]?\s*(\d{3,4})/i
+            );
             if (m2) {
                cardFound = m2[1];
                break;
             }
          }
+
          invoices.push({
             invoiceId: invId,
+            branchName: null,
             amount,
             cardNumber: cardFound,
          });
       }
    }
 
-   // أخيراً: إذا لم نقرأ أي فاتورة، حاول استخراج أي أزواج رقمية قد تكون مدفونة
+   // محاولات احتياطية لاستخراج أزواج رقمية إن لم يتم التقاط أي فاتورة
    if (invoices.length === 0) {
       const allMatches = text.match(/(\d{6,})\s+([\d.]+)/g);
       if (allMatches) {
@@ -543,6 +404,7 @@ function parseInvoices(text) {
             const parts = t.split(/\s+/);
             invoices.push({
                invoiceId: parts[0],
+               branchName: null,
                amount: parseFloat(parts[1]),
                cardNumber: null,
             });
@@ -554,8 +416,8 @@ function parseInvoices(text) {
 }
 
 /* ======================
-   مقارنة الفواتير بالسجلات - مع مراعاة فلاتر العرض بدقة
-   النتيجة: جدول منظم ثم زر لعرض "السند" لكل صف
+   المقارنة: فواتير مقابل سجلات
+   نتائج مرتبة وتصنيفات
    ====================== */
 function compareInvoicesToRecords(invoices, records, options, branchAccountId) {
    const results = [];
@@ -656,7 +518,7 @@ function compareInvoicesToRecords(invoices, records, options, branchAccountId) {
       });
    }
 
-   // ترتيب النتائج: مطابقة تامة أولًا ثم الباقي (اختياري)
+   // ترتيب النتائج: مطابقة تامة أولًا ثم الباقي
    results.sort((a, b) => {
       const rank = {
          "مطابقة تامة ✅": 0,
@@ -672,15 +534,21 @@ function compareInvoicesToRecords(invoices, records, options, branchAccountId) {
 }
 
 /* ======================
-   عرض نتائج المقارنة كجدول (الهيكل المطلوب)
-   الأعمدة: النوع - رقم البطاقة - القيمة في التقرير - القيمة في الفواتير - اظهار السند
+   عرض نتائج المقارنة (لا تمسح الحاوية داخليًا)
    ====================== */
-function renderCompareResults(results, records, invoices, branchAccountId) {
+function renderCompareResults(
+   results,
+   records,
+   invoices,
+   branchAccountId,
+   branchName
+) {
    const container = document.getElementById("compare-results");
-   container.innerHTML = "";
-
+   // لا نمسح الحاوية هنا؛ قرار المسح يتم في المتحكم (زر المقارنة)
    if (!results.length) {
-      container.innerHTML = "<p>لا توجد نتائج للمقارنة.</p>";
+      const p = document.createElement("p");
+      p.textContent = "لا توجد نتائج للمقارنة.";
+      container.appendChild(p);
       return;
    }
 
@@ -712,11 +580,34 @@ function renderCompareResults(results, records, invoices, branchAccountId) {
     `;
 
       // عمود "اظهار السند" -> زر يفتح لوحة تحتوي جدول السند
+      // const tdVoucher = tr.querySelector("td:last-child");
+      // const voucherBtn = document.createElement("button");
+      // voucherBtn.className = "voucher-btn";
+      // voucherBtn.textContent = "عرض السند ⬇";
+      // tdVoucher.appendChild(voucherBtn);
+
       const tdVoucher = tr.querySelector("td:last-child");
-      const voucherBtn = document.createElement("button");
-      voucherBtn.className = "voucher-btn";
-      voucherBtn.textContent = "عرض السند ⬇";
-      tdVoucher.appendChild(voucherBtn);
+
+      const saveBtn = document.createElement("button");
+      saveBtn.className = "save-error-btn";
+      saveBtn.textContent = "تسجيل الخطأ";
+
+      saveBtn.addEventListener("click", () => {
+         addErrorRecord({
+            invoiceValue: invoiceValue,
+            reportValue: reportValue,
+            invoiceId: invId,
+            cardNumber: cardNum,
+            branchAccountId: branchAccountId || 0,
+            branchName: branchName || "-",
+            errorType: 0, // القيمة الافتراضية
+         });
+
+         saveBtn.textContent = "✔ تم التخزين";
+         saveBtn.disabled = true;
+      });
+
+      tdVoucher.appendChild(saveBtn);
 
       const panel = document.createElement("div");
       panel.className = "voucher-panel";
@@ -727,7 +618,6 @@ function renderCompareResults(results, records, invoices, branchAccountId) {
       else if (rec && !inv) diff = parseFloat(rec.amount.toFixed(3));
       else if (!rec && inv) diff = -parseFloat(inv.amount.toFixed(3));
 
-      // نص البيان: ثابت مع استبدال أرقام الفاتورة والبطاقة
       const invId = inv
          ? inv.invoiceId
          : res.invoiceIndex != null
@@ -736,9 +626,6 @@ function renderCompareResults(results, records, invoices, branchAccountId) {
       const cardNum = card || (inv ? inv.cardNumber : "");
       const acct = branchAccountId || "-";
 
-      // بناء جدول السند داخل الـ panel
-      // صف 1: diff ، 0 ، account id ، بيان
-      // صف 2: 0 ، diff ، account id ، بيان ثانِ (زيادة مبيعات عمان)
       const panelTable = document.createElement("table");
       panelTable.style.width = "100%";
       panelTable.innerHTML = `
@@ -764,11 +651,10 @@ function renderCompareResults(results, records, invoices, branchAccountId) {
     `;
       panel.appendChild(panelTable);
 
-      // سلوك الزر
-      voucherBtn.addEventListener("click", () => {
-         const open = panel.classList.toggle("open");
-         voucherBtn.textContent = open ? "إخفاء السند ⬆" : "عرض السند ⬇";
-      });
+      // voucherBtn.addEventListener("click", () => {
+      //    const open = panel.classList.toggle("open");
+      //    voucherBtn.textContent = open ? "إخفاء السند ⬆" : "عرض السند ⬇";
+      // });
 
       tdVoucher.appendChild(panel);
       tbody.appendChild(tr);
@@ -779,16 +665,15 @@ function renderCompareResults(results, records, invoices, branchAccountId) {
 }
 
 /* ======================
-   زر المقارنة (التكامل)
+   زر المقارنة — يدعم اختيار ALL
    ====================== */
 document.getElementById("compare-btn").addEventListener("click", () => {
    const selectedId = document.getElementById("terminal-select").value;
    const invoiceText = document.getElementById("invoice-input").value;
    const invoices = parseInvoices(invoiceText);
 
-   const terminal = merged.find((t) => t.terminalId === selectedId);
-   if (!terminal) {
-      alert("الرجاء اختيار Terminal صحيح");
+   if (!merged.length) {
+      alert("الرجاء أولاً تحليل تقرير الفيزا (Analyze) لتحميل السجلات.");
       return;
    }
 
@@ -800,14 +685,76 @@ document.getElementById("compare-btn").addEventListener("click", () => {
       showRecordOnly: document.getElementById("showRecordOnly").checked,
    };
 
-   // ابحث عن حساب الفرع لاستخدامه في السندات
+   const container = document.getElementById("compare-results");
+   container.innerHTML = ""; // نمسح مرة واحدة عند بدء العرض
+
+   // حالة اختيار "الكل" -> نعرض نتائج كل التيرمينالات متتابعة
+   if (selectedId === "ALL") {
+      merged.forEach((terminal) => {
+         const id = terminal.terminalId;
+         const branch = branchInfo.find(
+            (b) => String(b["Terminal ID"]).slice(-4) === String(id).slice(-4)
+         );
+         const branchName = branch ? branch.name : null;
+
+         const title = document.createElement("h3");
+         title.textContent = branchName
+            ? `${branchName} — (${id})`
+            : `غير معروف — (${id})`;
+         container.appendChild(title);
+
+         // فلترة الفواتير: نأخذ فقط الفواتير التي لديها branchName مطابق حرفيًا لاسم الفرع
+         const filteredInvoices = invoices.filter(
+            (inv) =>
+               inv.branchName && branchName && inv.branchName === branchName
+         );
+
+         if (filteredInvoices.length === 0) {
+            const p = document.createElement("p");
+            p.textContent = "لا توجد فواتير مطابقة حرفيًا لهذا الفرع.";
+            container.appendChild(p);
+            return; // ننتقل للفرع التالي
+         }
+
+         const results = compareInvoicesToRecords(
+            filteredInvoices,
+            terminal.transactions,
+            options,
+            branch ? branch["account id"] : "-"
+         );
+
+         renderCompareResults(
+            results,
+            terminal.transactions,
+            filteredInvoices,
+            branch ? branch["account id"] : "-",
+            branch ? branch.name : "-"
+         );
+      });
+
+      return;
+   }
+
+   // الحالة الاعتيادية: اختيار Terminal واحد
+   const terminal = merged.find((t) => t.terminalId === selectedId);
+   if (!terminal) {
+      alert("الرجاء اختيار Terminal صحيح");
+      return;
+   }
+
    const branch = branchInfo.find(
       (b) => String(b["Terminal ID"]).slice(-4) === String(selectedId).slice(-4)
    );
    const branchAccountId = branch ? branch["account id"] : "-";
 
+   // فلترة الفواتير: لو الفاتورة تحمل branchName نأخذها فقط لو تطابق حرفيًا اسم الفرع المختار.
+   const filteredInvoices = invoices.filter((inv) => {
+      if (!inv.branchName) return true; // فواتير بدون اسم تُعتبر عامة في حالة اختيار فرع واحد
+      return branch && inv.branchName === branch.name;
+   });
+
    const results = compareInvoicesToRecords(
-      invoices,
+      filteredInvoices,
       terminal.transactions,
       options,
       branchAccountId
@@ -815,23 +762,28 @@ document.getElementById("compare-btn").addEventListener("click", () => {
    renderCompareResults(
       results,
       terminal.transactions,
-      invoices,
-      branchAccountId
+      filteredInvoices,
+      branchAccountId,
+      branch ? branch.name : "-"
    );
 });
 
 
-
-===================================================================
+=======================================
 
 style.css
 body {
-   font-family: "Tajawal", sans-serif;
+   /* font-family: "Tajawal", sans-serif; */
+   font-family: "Almarai", sans-serif;
+   font-optical-sizing: auto;
+   font-style: normal;
+
    background-color: #f4f6f8;
    color: #222;
    margin: 0;
    padding: 0;
    line-height: 1.6;
+   direction: rtl;
 }
 
 header,
@@ -995,3 +947,575 @@ tr:nth-child(even) td {
    padding: 6px 8px;
    border-bottom: 1px dashed #eee;
 }
+
+/* errors styles */
+.error-group {
+   margin-bottom: 40px;
+   padding: 15px;
+   border: 1px solid #ccc;
+   border-radius: 8px;
+   background: #fafafa;
+}
+
+.whatsapp-btn {
+   background: #25d366;
+   color: #fff;
+   padding: 8px 14px;
+   border-radius: 8px;
+   text-decoration: none;
+   font-weight: bold;
+   margin: 10px 0;
+   display: inline-block;
+}
+.whatsapp-btn:hover {
+   opacity: 0.9;
+}
+
+table {
+   width: 100%;
+   border-collapse: collapse;
+   margin-top: 10px;
+}
+th,
+td {
+   border: 1px solid #ccc;
+   padding: 8px;
+   text-align: center;
+}
+
+
+
+=============================
+information.json
+
+{
+  "ورقة1": [
+    {
+      "Terminal ID": "20035149",
+      "name": "City Centre Qurum",
+      "account id": 133223,
+      "bank account": "13217"
+    },
+    {
+      "Terminal ID": "01340256",
+      "name": "Nazwa",
+      "account id": 133212,
+      "bank account": "13217"
+    },
+    {
+      "Terminal ID": "01340264",
+      "name": "Golden Dragon Mall (Br2)",
+      "account id": 133202,
+      "bank account": "13217"
+    },
+    {
+      "Terminal ID": "01340272",
+      "name": "Al saada BR",
+      "account id": 133211,
+      "bank account": "13217"
+    },
+    {
+      "Terminal ID": "01340280",
+      "name": "AL SEEB (Br2)",
+      "account id": 133204,
+      "bank account": "13217"
+    },
+    {
+      "Terminal ID": "01340298",
+      "name": "Souhar (Br2)",
+      "account id": 133206,
+      "bank account": "13217"
+    },
+    {
+      "Terminal ID": "01399377",
+      "name": "Alkhawd",
+      "account id": 133213,
+      "bank account": "13217"
+    },
+    {
+      "Terminal ID": "01450618",
+      "name": "Elheil (Br2)",
+      "account id": 133215,
+      "bank account": "13217"
+    },
+    {
+      "Terminal ID": "20045522",
+      "name": "Avenues Mall",
+      "account id": 133218,
+      "bank account": "13216"
+    },
+    {
+      "Terminal ID": "20082624",
+      "name": "City Centre Suhar",
+      "account id": 133221,
+      "bank account": "13216"
+    },
+    {
+      "Terminal ID": "20082632",
+      "name": "Mall of oman",
+      "account id": 133222,
+      "bank account": "13216"
+    },
+    {
+      "Terminal ID": "01336858",
+      "name": "Elheil (Br1)",
+      "account id": 133207,
+      "bank account": "13216"
+    },
+    {
+      "Terminal ID": "01336866",
+      "name": "Souhar (Br1)",
+      "account id": 133205,
+      "bank account": "13216"
+    },
+    {
+      "Terminal ID": "01336874",
+      "name": "Golden Dragon Mall (Br1)",
+      "account id": 133201,
+      "bank account": "13216"
+    },
+    {
+      "Terminal ID": "01336882",
+      "name": "Alsalm St BR",
+      "account id": 133210,
+      "bank account": "13216"
+    },
+    {
+      "Terminal ID": "20017988",
+      "name": "City Center Al Mawaleh",
+      "account id": 133224,
+      "bank account": "13217"
+    },
+    {
+      "Terminal ID": "01663954",
+      "name": "Muscat Mall",
+      "account id": 133216,
+      "bank account": "13216"
+    },
+    {
+      "Terminal ID": "20080727",
+      "name": "Al SEEB (Br3)",
+      "account id": 133217,
+      "bank account": "13219"
+    },
+    {
+      "Terminal ID": "20080735",
+      "name": "Al amerat",
+      "account id": 133219,
+      "bank account": "13219"
+    },
+    {
+      "Terminal ID": "20080743",
+      "name": "Golden Dragon Mall (Br3)",
+      "account id": 133220,
+      "bank account": "13219"
+    },
+    {
+      "Terminal ID": "20080750",
+      "name": "Sur (Br1)",
+      "account id": 133209,
+      "bank account": "13219"
+    }
+  ]
+}
+
+
+=====================================================
+errors.html
+<!DOCTYPE html>
+<html lang="ar">
+   <head>
+      <meta charset="UTF-8" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+         href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=El+Messiri:wght@400..700&display=swap"
+         rel="stylesheet"
+      />
+      <link rel="stylesheet" href="style.css" />
+      <title>الأخطاء المسجلة</title>
+
+      <style></style>
+   </head>
+
+   <body>
+      <header>
+         <!-- <h1>📊 تقارير وإجماليات نقاط البيع</h1> -->
+         <h2>الأخطاء المسجلة</h2>
+      </header>
+
+      <div id="1" class="main">
+         <div id="errors-container"></div>
+      </div>
+
+      <footer>
+         <p>✨ تصميم وتحليل بواسطة محمد التلاوي - مهندس معلوماتية - ✨</p>
+      </footer>
+      <div id="voucher-modal" class="modal">
+         <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="voucher-body"></div>
+         </div>
+      </div>
+
+      <style>
+         .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+         }
+         .modal-content {
+            background: #fff;
+            padding: 20px;
+            /* width: 420px; */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+         }
+         .close-modal {
+            float: left;
+            font-size: 28px;
+            cursor: pointer;
+         }
+      </style>
+
+      <script src="errors_feature_code.js"></script>
+      <script>
+         renderErrorsGrouped();
+         attachErrorsHandlers();
+      </script>
+   </body>
+</html>
+
+
+
+================================= 
+errors_feature_code.js
+// ============================
+// errors_feature_code.js (مصحح بالكامل)
+// ============================
+
+// ============================
+// Load / Save
+// ============================
+function loadErrors() {
+   try {
+      return JSON.parse(localStorage.getItem("visaErrors") || "[]");
+   } catch {
+      return [];
+   }
+}
+function saveErrors(list) {
+   localStorage.setItem("visaErrors", JSON.stringify(list));
+}
+
+// لإضافة خطأ من script.js
+function addErrorRecord(obj) {
+   const list = loadErrors();
+   list.push(obj);
+   saveErrors(list);
+}
+
+// ============================
+// عرض الأخطاء grouped حسب الفرع
+// ============================
+function renderErrorsGrouped() {
+   const container = document.getElementById("errors-container");
+   container.innerHTML = "";
+
+   const list = loadErrors();
+
+   if (!list.length) {
+      container.innerHTML = "<p>لا توجد أخطاء مسجلة.</p>";
+      return;
+   }
+
+   // تجميع حسب اسم الفرع
+   const grouped = {};
+   list.forEach((err) => {
+      if (!grouped[err.branchName]) grouped[err.branchName] = [];
+      grouped[err.branchName].push(err);
+   });
+
+   // إنشاء مجموعة لكل فرع
+   Object.keys(grouped).forEach((branch) => {
+      const groupBox = document.createElement("div");
+      groupBox.className = "error-group";
+
+      const title = document.createElement("h2");
+      title.textContent = `فرع: ${branch}`;
+      groupBox.appendChild(title);
+
+      // زر الواتساب (مرة واحدة لكل فرع)
+      const cards = grouped[branch].map((e) => e.cardNumber).filter(Boolean);
+
+      const msg =
+         `فرع ${branch} بعتلي أرقام بطاقات مبيعات أمس الي تحت :\n\n` +
+         cards.map((c) => `• ${c}`).join("\n");
+
+      const whatsappBtn = document.createElement("a");
+      whatsappBtn.className = "whatsapp-btn";
+      whatsappBtn.href = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      whatsappBtn.target = "_blank";
+      whatsappBtn.textContent = "📲 إرسال أرقام البطاقات عبر الواتساب";
+      groupBox.appendChild(whatsappBtn);
+
+      // جدول الأخطاء
+      const table = document.createElement("table");
+      table.innerHTML = `
+      <thead>
+         <tr>
+            <th>رقم الفاتورة</th>
+            <th>رقم البطاقة</th>
+            <th>القيمة بالفاتورة</th>
+            <th>القيمة بالتقرير</th>
+            <th>نوع الخطأ</th>
+            <th>السند</th>
+            <th>تحكم</th>
+         </tr>
+      </thead>
+    `;
+
+      const tbody = document.createElement("tbody");
+
+      grouped[branch].forEach((err) => {
+         const globalIndex = list.indexOf(err);
+
+         const tr = document.createElement("tr");
+         tr.innerHTML = `
+        <td>${err.invoiceId}</td>
+        <td>${err.cardNumber}</td>
+        <td>${err.invoiceValue}</td>
+        <td>${err.reportValue}</td>
+        <td>
+          <input type="number" min="0" max="4" class="err-type-input" data-i="${globalIndex}" value="${
+            err.errorType || 0
+         }">
+        </td>
+        <td>
+          <button class="voucher-btn" data-i="${globalIndex}">إظهار السند</button>
+        </td>
+        <td>
+          <button class="edit-btn" data-i="${globalIndex}">تعديل</button>
+          <button class="delete-btn" data-i="${globalIndex}">حذف</button>
+        </td>
+      `;
+
+         tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      groupBox.appendChild(table);
+      container.appendChild(groupBox);
+   });
+}
+
+// ============================
+// Edit / Delete
+// ============================
+function deleteRecord(i) {
+   const list = loadErrors();
+   if (i < 0 || i >= list.length) return;
+   list.splice(i, 1);
+   saveErrors(list);
+   renderErrorsGrouped();
+}
+
+function editRecord(i) {
+   const list = loadErrors();
+   const obj = list[i];
+   if (!obj) return;
+
+   obj.invoiceValue =
+      prompt("القيمة في الفاتورة", obj.invoiceValue) || obj.invoiceValue;
+   obj.reportValue =
+      prompt("القيمة في الكشف", obj.reportValue) || obj.reportValue;
+   obj.invoiceId = prompt("رقم الفاتورة", obj.invoiceId) || obj.invoiceId;
+   obj.cardNumber = prompt("رقم البطاقة", obj.cardNumber) || obj.cardNumber;
+   obj.branchName = prompt("اسم الفرع", obj.branchName) || obj.branchName;
+   obj.errorType =
+      parseInt(prompt("نوع الخطأ (1-4)", obj.errorType) || obj.errorType) || 0;
+
+   list[i] = obj;
+   saveErrors(list);
+   renderErrorsGrouped();
+}
+
+// ============================
+// توليد مودال السند (تستخدم generateVoucherHTML)
+// ============================
+function generateVoucherHTML(err) {
+   const diff = (
+      parseFloat(err.reportValue || 0) - parseFloat(err.invoiceValue || 0)
+   ).toFixed(3);
+
+   let ContentError = "";
+
+   switch (err.errorType) {
+      case 0:
+         ContentError = `
+            <h3>السند (نوع 0) — لم يتم تحديد نوع الخطأ بعد</h3>
+            <p style="color:#a00; font-weight:bold; text-align:center;">
+               ⚠ الرجاء تحديد نوع الخطأ أولاً ليتم إنشاء السند بشكل صحيح
+            </p>
+         `;
+         break;
+
+      case 1:
+         ContentError = `
+            <h3>السند (نوع 1) نقص والسحب صحيح</h3>
+            <table border="1" width="100%" style="text-align:center; margin-top:8px;">
+               
+            <tr>
+               <td>
+                  ${Math.abs(diff)}
+               </td>
+               <td>
+                  0     
+               </td>
+               <td>
+                  52121
+               </td>
+               <td>
+               نقص بالكشف رقم البطاقة ${err.cardNumber} السحب صحيح بالورقة فاتورة رقم ${err.invoiceId}
+               </td>
+            </tr>
+            <tr>
+               <td>
+               0     
+               </td>
+               <td>
+               ${Math.abs(diff)}
+               </td>
+               <td>
+                  ${err.branchAccountId || "-"}
+               </td>
+               <td>
+                  نقص بالكشف رقم البطاقة ${err.cardNumber} السحب صحيح بالورقة فاتورة رقم ${err.invoiceId}
+               </td>
+            </tr>
+            </table>
+         `;
+         break;
+
+      case 2:
+         ContentError = `
+            <h3>السند (نوع 2)</h3>
+            <p>هنا نموذج نوع 2… (سنكمله لاحقاً حسب طلبك)</p>
+         `;
+         break;
+
+      case 3:
+         ContentError = `
+            <h3>السند (نوع 3)</h3>
+            <p>هنا نموذج نوع 3…</p>
+         `;
+         break;
+
+      case 4:
+         ContentError = `
+            <h3>السند (نوع 4)</h3>
+            <p>هنا نموذج نوع 4…</p>
+         `;
+         break;
+
+      default:
+         ContentError = `<h3>نوع غير معروف</h3>`;
+         break;
+   }
+
+   return ContentError;
+}
+
+function ensureModalElements() {
+   if (document.getElementById("voucher-modal")) return;
+   const modal = document.createElement("div");
+   modal.id = "voucher-modal";
+   modal.style.cssText =
+      "display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:9999;";
+   modal.innerHTML = `
+    <div class="modal-box" style="background:#fff; padding:18px; border-radius:10px; max-width:700px; width:92%; box-shadow:0 6px 30px rgba(0,0,0,0.3);">
+      <span class="close-modal" style="float:left; cursor:pointer; font-size:22px;">×</span>
+      <div id="voucher-body"></div>
+    </div>
+  `;
+   document.body.appendChild(modal);
+
+   modal.querySelector(".close-modal").addEventListener("click", () => {
+      modal.style.display = "none";
+   });
+   modal.addEventListener("click", (ev) => {
+      if (ev.target === modal) modal.style.display = "none";
+   });
+}
+
+function showVoucherModal(err) {
+   const modal = document.getElementById("voucher-modal");
+   const body = document.getElementById("voucher-body");
+
+   body.innerHTML = generateVoucherHTML(err);
+
+   modal.style.display = "flex";
+
+   document.querySelector(".close-modal").onclick = () => {
+      modal.style.display = "none";
+   };
+
+   modal.onclick = (ev) => {
+      if (ev.target === modal) modal.style.display = "none";
+   };
+}
+
+// ============================
+// ربط الأزرار (تغيير النوع، السند، الحذف، التعديل)
+// ============================
+function attachErrorsHandlers() {
+   document.addEventListener("click", (e) => {
+      const target = e.target;
+
+      // تغيير نوع الخطأ (input)
+      if (target.classList.contains("err-type-input")) {
+         const list = loadErrors();
+         const idx = parseInt(target.dataset.i);
+         if (!Number.isNaN(idx) && list[idx]) {
+            list[idx].errorType = parseInt(target.value) || 0;
+            saveErrors(list);
+         }
+         return;
+      }
+
+      // حذف
+      if (target.classList.contains("delete-btn")) {
+         const idx = parseInt(target.dataset.i);
+         deleteRecord(idx);
+         return;
+      }
+
+      // تعديل
+      if (target.classList.contains("edit-btn")) {
+         const idx = parseInt(target.dataset.i);
+         editRecord(idx);
+         return;
+      }
+
+      // إظهار السند (مودال)
+      if (target.classList.contains("voucher-btn")) {
+         const idx = parseInt(target.dataset.i);
+         const list = loadErrors();
+         if (!Number.isNaN(idx) && list[idx]) {
+            showVoucherModal(list[idx]);
+         }
+         return;
+      }
+   });
+}
+
+// تأكد استدعاء attachHandlers بعد تحميل الصفحة
+// attachErrorsHandlers(); // لا تستدعيها هنا إذا كنت تستدعيها من HTML كما تفعل الآن
+
