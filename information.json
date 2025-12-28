@@ -125,6 +125,12 @@
       "name": "Sur (Br1)",
       "account id": 133209,
       "bank account": "13219"
+    },
+    {
+      "Terminal ID": "20336890",
+      "name": "Sur City Center (Mirano)",
+      "account id": 133210,
+      "bank account": "13216"
     }
   ]
 }
