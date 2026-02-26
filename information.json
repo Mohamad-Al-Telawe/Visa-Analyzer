@@ -7,7 +7,7 @@
       "bank account": "13217"
     },
     {
-      "Terminal ID": "20451921",
+      "Terminal ID": "20336858",
       "name": "Nazwa",
       "account id": 133212,
       "bank account": "13216"
@@ -67,10 +67,10 @@
       "bank account": "13216"
     },
     {
-      "Terminal ID": "01336858",
+      "Terminal ID": "20340256",
       "name": "Elheil (Br1)",
       "account id": 133207,
-      "bank account": "13216"
+      "bank account": "13217"
     },
     {
       "Terminal ID": "01336866",
@@ -127,10 +127,10 @@
       "bank account": "13219"
     },
     {
-      "Terminal ID": "20336890",
+      "Terminal ID": "20087237",
       "name": "Sur City Center (Mirano)",
       "account id": 133225,
-      "bank account": "13216"
+      "bank account": "13217"
     }
   ]
 }
